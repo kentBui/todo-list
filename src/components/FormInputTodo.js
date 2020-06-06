@@ -55,9 +55,9 @@ export default function FormInputTodo(props) {
               required="required"
               onChange={hadleChangeSelected}
             >
-              <option value="Small">Small</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
+              <option value="0">Small</option>
+              <option value="1">Medium</option>
+              <option value="2">High</option>
             </select>
           </div>
 

@@ -1,6 +1,9 @@
 import React from "react";
 
-export default function SortAndSearch() {
+export default function SortAndSearch(props) {
+  const { nameSort, searchInput, handleSearch, clear, handleDropdown } = props;
+
+  const dataDropdown = ["Name ASC", "Name DESC", "Level ASC", "Level DESC"];
   return (
     <div className="col-12 col-lg-6">
       <div className="row">
@@ -22,22 +25,20 @@ export default function SortAndSearch() {
                 className="dropdown-menu"
                 aria-labelledby="dropdownMenuButton"
               >
-                <a className="dropdown-item" href="#">
-                  Name ASC
-                </a>
-                <a className="dropdown-item" href="#">
-                  Name DESC
-                </a>
-                <div className="dropdown-divider"></div>
-                <a className="dropdown-item" href="#">
-                  Level ASC
-                </a>
-                <a className="dropdown-item" href="#">
-                  Level DESC
-                </a>
+                {dataDropdown.map((item, index) => (
+                  <a
+                    key={index}
+                    className="dropdown-item"
+                    href="!#"
+                    onClick={() => handleDropdown(item)}
+                  >
+                    {item}
+                  </a>
+                ))}
+                {/* <div className="dropdown-divider"></div> */}
               </div>
-              <span className="badge badge-success badge-medium">
-                NAME - DESC
+              <span className="badge badge-success badge-medium text-uppercase">
+                {nameSort}
               </span>
             </div>
           </div>
@@ -51,9 +52,11 @@ export default function SortAndSearch() {
               type="text"
               className="form-control"
               placeholder="Search for..."
+              value={searchInput}
+              onChange={handleSearch}
             />
             <span className="input-group-append">
-              <button className="btn btn-info" type="button">
+              <button className="btn btn-info" type="button" onClick={clear}>
                 Clear!
               </button>
             </span>
