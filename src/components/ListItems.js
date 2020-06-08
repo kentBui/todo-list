@@ -2,7 +2,10 @@ import React from "react";
 import Item from "./Item";
 
 export default function ListItems(props) {
-  const { renderItems, editItem, deleteItem } = props;
+  const { items, isEdit, editItem, deleteItem, searchInput } = props;
+  const filterItems = items.filter(
+    (item) => item.task.indexOf(searchInput) !== -1
+  );
   return (
     <div className="col-12 panel panel-success">
       <div className="panel-heading">List Task</div>
@@ -19,11 +22,12 @@ export default function ListItems(props) {
             <th style={{ width: "160px" }}>Action</th>
           </tr>
         </thead>
-        {renderItems.map((item, index) => (
+        {filterItems.map((item, index) => (
           <Item
             key={item.id}
             item={item}
             index={index}
+            isEdit={isEdit}
             editItem={editItem}
             deleteItem={deleteItem}
           />

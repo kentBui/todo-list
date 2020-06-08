@@ -35,7 +35,6 @@ export default function SortAndSearch(props) {
                     {item}
                   </a>
                 ))}
-                {/* <div className="dropdown-divider"></div> */}
               </div>
               <span className="badge badge-success badge-medium text-uppercase">
                 {nameSort}

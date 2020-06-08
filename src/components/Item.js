@@ -1,30 +1,17 @@
 import React from "react";
-
-const changeLevelValueToLevel = (value) => {
-  let equal;
-  if (value === "0") {
-    equal = "Easy";
-  }
-  if (value === "1") {
-    equal = "Medium";
-  }
-  if (value === "2") {
-    equal = "High";
-  }
-  return equal;
-};
+import { Data } from "../data/DataLevel";
 
 export default function Item({ item, index, editItem, deleteItem }) {
   const { id, task, level } = item;
-  let levelValue = changeLevelValueToLevel(level);
-
   return (
     <tbody>
       <tr>
         <td className="text-center">{index + 1}</td>
         <td>{task}</td>
         <td className="text-center">
-          <span className="badge badge-info">{levelValue}</span>
+          <span className={`badge ${Data[level].class}`}>
+            {Data[level].level}
+          </span>
         </td>
         <td>
           <button

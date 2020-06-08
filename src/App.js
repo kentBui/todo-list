@@ -5,6 +5,8 @@ import Header from "./components/Header";
 import ListItems from "./components/ListItems";
 import SortAndSearch from "./components/SortAndSearch";
 import { v4 as uuidv4 } from "uuid";
+import ModalDelete from "./components/ModalDelete";
+import ModalEdit from "./components/ModalEdit";
 
 const data = [
   { id: 1, task: "ahha", level: "1" },
@@ -14,14 +16,18 @@ const data = [
 
 class App extends Component {
   state = {
-    items: [...data],
-    renderItems: [...data],
-    isAddTask: false,
     taskName: "",
-    levelValue: "0",
     id: uuidv4(),
+    editIndex: 0,
+    isEdit: false,
+    deletedIndex: 0,
+    levelValue: "0",
     searchInput: "",
+
+    items: [...data],
+    isAddTask: false,
     nameSort: "Name ASC",
+    isOpenModalDelete: false,
   };
 
   addTask = () => {
@@ -30,16 +36,10 @@ class App extends Component {
     });
   };
 
-  hadleChange = (e) => {
+  handleChange = (e, inputValue) => {
     let value = e.target.value;
     this.setState({
-      taskName: value,
-    });
-  };
-
-  hadleChangeSelected = (e) => {
-    this.setState({
-      levelValue: e.target.value,
+      [inputValue]: value,
     });
   };
 
@@ -54,7 +54,6 @@ class App extends Component {
 
     this.setState({
       items: [...items, tempItem],
-      renderItems: [...items, tempItem],
       taskName: "",
       id: uuidv4(),
     });
@@ -68,49 +67,91 @@ class App extends Component {
 
   editItem = (id, index) => {
     let { items } = this.state;
-    let newItems = items.filter((item) => item.id !== id);
-    let tempItem = items.find((item) => item.id === id);
-    console.log(tempItem);
+    let editItem = items.find((item) => item.id === id);
+
     this.setState({
-      items: newItems,
-      renderItems: newItems,
-      isAddTask: true,
-      taskName: tempItem.task,
+      editIndex: index,
       id: id,
+      isEdit: true,
+      taskName: editItem.task,
     });
   };
 
-  deleteItem = (id, index) => {
-    console.log(index);
+  handleChangeEdit = (e, inputValue) => {
+    let value = e.target.value;
+    this.setState({
+      [inputValue]: value,
+    });
+  };
+
+  saveEdit = () => {
+    let tempItem = {
+      task: this.state.taskName,
+      id: this.state.id,
+      level: this.state.levelValue,
+    };
+
+    console.log(tempItem);
+    console.log(this.state.editIndex);
     let { items } = this.state;
-    items.splice(index, 1);
+    items.splice(this.state.editIndex, 1, tempItem);
+
     this.setState({
       items: items,
-      renderItems: items,
+      isEdit: false,
+    });
+  };
+
+  cancelEdit = () => {
+    this.setState({
+      isEdit: false,
+      taskName: "",
+      levelValue: "0",
+    });
+  };
+
+  deleteItem = (index) => {
+    this.setState({
+      isOpenModalDelete: true,
+      deletedIndex: index,
+    });
+  };
+
+  deleteItemInModal = () => {
+    let tempItems = [...this.state.items];
+    console.log(this.state.deletedIndex);
+    tempItems.splice(this.state.deletedIndex - 1, 1);
+    this.setState({
+      items: tempItems,
+      isOpenModalDelete: false,
+    });
+  };
+
+  cancelDelete = () => {
+    this.setState({
+      isOpenModalDelete: false,
     });
   };
 
   handleDropdown = (item) => {
-    console.log(item);
-    let { renderItems } = this.state;
+    let { items } = this.state;
     switch (item) {
       case "Level ASC":
-        renderItems.sort((a, b) => a.level - b.level);
+        items.sort((a, b) => a.level - b.level);
         break;
       case "Level DESC":
-        renderItems.sort((a, b) => b.level - a.level);
+        items.sort((a, b) => b.level - a.level);
         break;
       case "Name ASC":
-        renderItems.sort((a, b) => a.task.toUpperCase() - b.task.toUpperCase());
+        items.sort((a, b) => a.task.toUpperCase() - b.task.toUpperCase());
         console.log(222);
         break;
       case "Name DESC":
-        renderItems.sort((a, b) => b.task.toUpperCase() - a.task.toUpperCase());
+        items.sort((a, b) => b.task.toUpperCase() - a.task.toUpperCase());
         break;
       default:
         break;
     }
-    console.log("renderItem sorted", renderItems);
     this.setState({
       nameSort: item,
     });
@@ -118,77 +159,88 @@ class App extends Component {
 
   handleSearch = (e) => {
     let value = e.target.value;
-    let { items } = this.state;
-    let tempItems = items.filter((item) => item.task.indexOf(value) !== -1);
-    console.log(tempItems);
+    console.log(value);
     this.setState({
-      renderItems: tempItems,
       searchInput: value,
     });
   };
 
   clear = () => {
     this.setState({
-      renderItems: [...this.state.items],
       searchInput: "",
     });
   };
 
   render() {
-    console.log("items", this.state.items);
-    console.log("renderItems", this.state.renderItems);
-
     const { isAddTask, taskName } = this.state;
 
-    const {
-      addTask,
-      cancel,
-      hadleChange,
-      handleSubmit,
-      hadleChangeSelected,
-    } = this;
+    const { cancel, addTask, handleChange, handleSubmit } = this;
 
     const formInputProps = {
       taskName,
       isAddTask,
       cancel,
       addTask,
-      hadleChange,
+      handleChange,
       handleSubmit,
-      hadleChangeSelected,
     };
 
-    const { renderItems } = this.state;
+    const { items, searchInput } = this.state;
 
     const { editItem, deleteItem } = this;
 
     const listItemsProps = {
-      renderItems,
+      items,
+      searchInput,
       editItem,
       deleteItem,
     };
 
-    const { searchInput, nameSort } = this.state;
+    const { nameSort } = this.state;
 
     const { handleSearch, clear, handleDropdown } = this;
 
     const sortAndSerchProps = {
       nameSort,
       searchInput,
-      handleSearch,
       clear,
+      handleSearch,
       handleDropdown,
     };
 
+    const { isOpenModalDelete } = this.state;
+    const { deleteItemInModal, cancelDelete } = this;
+
+    const modalDeleteProps = {
+      isOpenModalDelete,
+      cancelDelete,
+      deleteItemInModal,
+    };
+
+    const { isEdit } = this.state;
+    const { saveEdit, cancelEdit, handleChangeEdit } = this;
+
+    const modalEditProps = {
+      isEdit,
+      taskName,
+      saveEdit,
+      cancelEdit,
+      handleChangeEdit,
+    };
+
     return (
-      <div className="container">
-        <Header />
-        <div className="row">
-          <SortAndSearch {...sortAndSerchProps} />
-          <FormInputTodo {...formInputProps} />
-          <ListItems {...listItemsProps} />
+      <>
+        <div className="container">
+          <Header />
+          <div className="row">
+            <SortAndSearch {...sortAndSerchProps} />
+            <FormInputTodo {...formInputProps} />
+            <ListItems {...listItemsProps} />
+          </div>
         </div>
-      </div>
+        <ModalDelete {...modalDeleteProps} />
+        <ModalEdit {...modalEditProps} />
+      </>
     );
   }
 }

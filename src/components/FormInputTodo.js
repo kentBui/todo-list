@@ -2,13 +2,12 @@ import React from "react";
 
 export default function FormInputTodo(props) {
   const {
-    isAddTask,
+    cancel,
     addTask,
     taskName,
-    hadleChange,
+    isAddTask,
+    handleChange,
     handleSubmit,
-    hadleChangeSelected,
-    cancel,
   } = props;
 
   return (
@@ -44,7 +43,7 @@ export default function FormInputTodo(props) {
               className="form-control"
               placeholder="Task Name"
               value={taskName}
-              onChange={hadleChange}
+              onChange={(e) => handleChange(e, `taskName`)}
             />
           </div>
           <div className="form-group">
@@ -53,7 +52,7 @@ export default function FormInputTodo(props) {
               name="ds"
               className="form-control"
               required="required"
-              onChange={hadleChangeSelected}
+              onChange={(e) => handleChange(e, `levelValue`)}
             >
               <option value="0">Small</option>
               <option value="1">Medium</option>
